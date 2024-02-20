@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText: 2024 Anthony Loiseau <anthony.loiseau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+# This hook is not a test but an action. It should never fail.
+# If given file(s) are already read-only, then nothing heppens.
+# If given file(s) are not yet read-only, then they are mase read-only.
+-   id: set-readonly
+    name: set read-only files
+    description: change attributes of given files to set them read-only
+    entry: hooks/set_readonly
+    language: script
+    # Caller must override "files" key for this hook to trigger on wanted files.
+    files: '^$'
