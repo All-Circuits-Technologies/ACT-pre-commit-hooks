@@ -1,0 +1,46 @@
+# SPDX-FileCopyrightText: 2024 Anthony Loiseau <anthony.loiseau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+# Think about bumping revs from times to times: pre-commit autoupdate
+
+repos:
+- repo: https://github.com/pre-commit/pre-commit
+  rev: v3.6.2
+  hooks:
+  - id: validate_manifest                           # .pre-commit-config.yaml
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.5.0
+  hooks:
+  - id: check-added-large-files                     # all
+  - id: check-ast                                   # python
+  - id: check-case-conflict                         # all
+  - id: check-docstring-first                       # python
+  - id: check-executables-have-shebangs             # shell
+  - id: check-json                                  # json
+  - id: check-merge-conflict                        # text
+  - id: check-shebang-scripts-are-executable        # shell
+  - id: check-toml                                  # toml
+  - id: check-vcs-permalinks                        # text
+  - id: check-xml                                   # xml
+  - id: check-yaml                                  # yaml
+    args: [--allow-multiple-documents]
+  - id: detect-private-key                          # text
+  - id: end-of-file-fixer                           # text
+  - id: fix-byte-order-marker                       # text
+  - id: mixed-line-ending                           # text
+  - id: trailing-whitespace                         # text
+- repo: https://github.com/fsfe/reuse-tool.git
+  rev: v3.0.1
+  hooks:
+  - id: reuse                                       # all
+- repo: https://github.com/igorshubovych/markdownlint-cli
+  rev: v0.39.0
+  hooks:
+  - id: markdownlint-fix                            # markdown
+- repo: https://github.com/shellcheck-py/shellcheck-py
+  rev: v0.9.0.6
+  hooks:
+  - id: shellcheck                                  # shell

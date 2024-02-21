@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: 2012-2019 Vidar Holen ('koala_man') and contributors
+# SPDX-FileCopyrightText: 2023 Anthony Loiseau <anthony.loiseau@allcircuits.com>
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
+shellcheck:
+  stage: lint
+  image: koalaman/shellcheck-alpine:v0.9.0
+  before_script:
+  - apk update
+  - apk add git
+  script:
+  - git ls-files --exclude='*.sh' --ignored -c -z | xargs -0rt shellcheck
