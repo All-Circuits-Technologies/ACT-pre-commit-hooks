@@ -7,13 +7,33 @@
 # - If given file(s) are not yet read-only, they are made read-only, success
 # - If given file(s) does not exists, nothing is done and action succeed
 # - If you forget to override `args` key, action will fail
--   id: set-readonly
-    name: set read-only files
-    description: change attributes of given files to set them read-only
-    entry: hooks/set_readonly
-    language: script
-    always_run: true
-    pass_filenames: false
-    # Caller must override args with glob-pattern file names
-    # Example: args: ['**.sqlite']
-    args: []
+- id: set-readonly
+  name: set read-only files
+  description: change attributes of given files to set them read-only
+  entry: hooks/set_readonly
+  language: script
+  always_run: true
+  pass_filenames: false
+  # Caller must override args with glob-pattern file names
+  # Example: args: ['**.sqlite']
+  args: []
+
+# This hook is not a test but a prepare-commit-msg action. It should never fail.
+# - If current branch name have numbers, appends Refs: #xxx to commit message
+# - Otherwise do not appends any trailers
+- id: msg-add-redmine-refs
+  name: add Redmine refs to commit message
+  description: peek redmine ids from branch name and appends refs to them
+  entry: hooks/msg_add_redmine_refs
+  language: script
+  stages: [prepare-commit-msg]
+  args: ['-1', -d, '']
+
+# This hook is not a test but a commit-msg action. It should never fail.
+# - Removes empty trailers from commit message, if any
+- id: msg-remove-empty-trailers
+  name: remove commit message empty trailers
+  description: remove trailers whose trimmed value is empty
+  entry: git interpret-trailers --in-place --trim-empty
+  language: system
+  stages: [commit-msg]
