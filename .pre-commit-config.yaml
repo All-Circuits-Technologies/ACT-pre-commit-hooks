@@ -44,3 +44,11 @@ repos:
   rev: v0.9.0.6
   hooks:
   - id: shellcheck                                  # shell
+- repo: https://github.com/scop/pre-commit-shfmt
+  rev: v3.8.0-1
+  hooks:
+    - id: shfmt
+      # Tools scripts are not compatible with shfmt and are not designed within
+      # this repo (copied from skels). Therefore we don't want this repo to
+      # enforce a style on them.
+      exclude: '^tools/.*'
