@@ -25,7 +25,7 @@ repos:
   rev: # any tag or sha
   hooks:
   - id: set-readonly
-    files: '.+\.sqlite'
+    args: ['*.sqlite']
 ```
 
 ## Hooks available
@@ -33,9 +33,13 @@ repos:
 ### `set-readonly`
 
 This hook removes write permissions to explicitly chosen files.
-You must set `files` hook attribute to list files you want to be read-only.
+You must set `args` hook attribute to list file or glob patterns you want to be
+read-only.
 
-This hook never fails. It succeed even when files were not yet read-only.
+Only files versioned under git are affected.
+
+This hook should never fails. It succeed even when files are not found or when
+they were not yet read-only.
 
 No specific dependencies.
 

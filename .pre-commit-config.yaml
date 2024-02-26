@@ -6,6 +6,7 @@
 # See https://pre-commit.com/hooks.html for more hooks
 # Think about bumping revs from times to times: pre-commit autoupdate
 
+default_install_hook_types: [pre-commit, prepare-commit-msg, commit-msg]
 repos:
 - repo: https://github.com/pre-commit/pre-commit
   rev: v3.6.2
@@ -52,3 +53,11 @@ repos:
       # this repo (copied from skels). Therefore we don't want this repo to
       # enforce a style on them.
       exclude: '^tools/.*'
+- repo: .
+  rev: 0e93303
+  hooks:
+  - id: set-readonly
+    # Example of use, there is no such files controlled in current repository
+    args: ['*.sqlite']
+  - id: msg-add-redmine-refs
+  - id: msg-remove-empty-trailers
