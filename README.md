@@ -22,7 +22,7 @@ Example of use, which will help you to keep SQLite files read-only.
 ```yaml
 repos:
 - repo: https://github.com/All-Circuits-Technologies/act-pre-commit-hooks
-  rev: master # or any tag/sha
+  rev: # any tag or sha
   hooks:
   - id: set-readonly
     files: '.+\.sqlite'
@@ -32,9 +32,24 @@ repos:
 
 ### `set-readonly`
 
-This hook removes write permissions to explicitly given files.
+This hook removes write permissions to explicitly chosen files.
 You must set `files` hook attribute to list files you want to be read-only.
 
 This hook never fails. It succeed even when files were not yet read-only.
 
 No specific dependencies.
+
+### `msg-add-redmine-refs`
+
+This hook only act upon prepare-commit-msg stage.
+It pre-fills commit message with one or several "Refs:" trailers pointing to
+redmine tickets. IDs of inserted redmine tickets are taken from numbers found
+in current branch name.
+
+### `msg-remove-empty-trailers`
+
+This hook act upon commit-msg stage.
+It removes empty trailers if any, which may arise when a commit-msg template
+is used which suggests optional trailers to fill.
+
+For example, a final line such as "Refs: " pointing to nothing would be removed.
