@@ -109,16 +109,16 @@ parse_args() {
 		esac
 	done
 
-	if [[ "${MIN_ID_LENGTH}" -gt "${MAX_ID_LENGTH}" ]]; then
+	if [[ ${MIN_ID_LENGTH} -gt ${MAX_ID_LENGTH} ]]; then
 		die "Min ID length requirement must be equal or greater than max length"
 	fi
 
 	shift $((OPTIND - 1))
-	if [[ "$#" -eq 0 ]]; then
+	if [[ $# -eq 0 ]]; then
 		die "Missing commit-msg-file argument"
-	elif [[ "$#" -gt 1 ]]; then
+	elif [[ $# -gt 1 ]]; then
 		die "Too many commit-msg-file arguments, only one supported"
-	elif ! [[ -r "$1" ]]; then
+	elif ! [[ -r $1 ]]; then
 		die "commit-msg-file argument is not a readable file"
 	fi
 
@@ -141,20 +141,20 @@ main() {
 	ids="$(peek_redmine_ids)"
 
 	# Special no IDs found cases
-	if [[ -z "${ids}" ]] && [[ -n "${FAIL_IF_NO_IDS}" ]]; then
+	if [[ -z ${ids} ]] && [[ -n ${FAIL_IF_NO_IDS} ]]; then
 		die "No IDs found in current branch name"
 	fi
 
-	if [[ -z "${ids}" ]] && [[ -z "${DEFAULT_REF_VALUE}" ]]; then
+	if [[ -z ${ids} ]] && [[ -z ${DEFAULT_REF_VALUE} ]]; then
 		# No fallback trailer values, nothing to do, success
 		exit 0
 	fi
 
 	# Compute wanted redmine ref trailer value(s)
 	REF_VALUES=()
-	if [[ -z "${ids}" ]]; then
+	if [[ -z ${ids} ]]; then
 		REF_VALUES+=("${DEFAULT_REF_VALUE}")
-	elif [[ -n "${ONE_LINER}" ]]; then
+	elif [[ -n ${ONE_LINER} ]]; then
 		REF_VALUES+=("#${ids// /, #}")
 	else
 		for id in ${ids}; do
