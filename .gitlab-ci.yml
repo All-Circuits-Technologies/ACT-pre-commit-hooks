@@ -11,14 +11,5 @@ stages:
   - test
   - deploy
 
-# Merge all our gitlab-ci.yml fragments.
-# To uncomment when gitlab is updated
-#include:
-#  - local: '/gitlab-ci/**.gitlab-ci.yml'
-
-# TODO: replace next lines with upper ones when gitlab is updated.
-# - Our old gitlab does not support wildcards
-# - Our old gitlab does not support multiple inclusions at once (list)
 include:
-  - local: '/gitlab-ci/reuse.gitlab-ci.yml'
-  - local: '/gitlab-ci/shellcheck.gitlab-ci.yml'
+ - local: '/gitlab-ci/**.gitlab-ci.yml'
