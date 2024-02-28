@@ -27,7 +27,7 @@
   entry: hooks/msg_add_redmine_refs
   language: script
   stages: [prepare-commit-msg]
-  args: ['-1', -d, '']
+  args: ['-1', -d, '', -k]
 
 # This hook is not a test but a commit-msg action. It should never fail.
 # - Removes empty trailers from commit message, if any

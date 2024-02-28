@@ -26,6 +26,10 @@
 ##           Defaults to empty.
 ##   -f      Fail if no IDs are found in current branch name,
 ##           even if a non-empty -d is given
+##   -k      Try to continue despite minor unexpected but fixable situations
+##           - create commit-msg-file if it does not exists, which should never
+##             occur given git documentation but which nevertheless occurs with
+##             git gui broken prepare-commit-msg hook calls.
 ##
 ## Optional vars:
 ## Those environment variables can be used to override default arguments value.
@@ -36,6 +40,7 @@
 ##   -1      MAAR_ONE_LINER
 ##   -d      MAAR_DEFAULT_REF_VALUE
 ##   -f      MAAR_FAIL_IF_NO_IDS
+##   -k      MAAR_KEEP_GOING
 
 # Globally enable a few optional/extra shellcheck checks
 # shellcheck enable=check-unassigned-uppercase  # SC2154
@@ -57,6 +62,7 @@ MAX_ID_LENGTH="${MARR_MAX_ID_LENGTH:-10}"
 ONE_LINER="${MAAR_ONE_LINER:-}"
 DEFAULT_REF_VALUE="${MAAR_DEFAULT_REF_VALUE:-}"
 FAIL_IF_NO_IDS="${MAAR_FAIL_IF_NO_IDS:-}"
+KEEP_GOING="${MAAR_KEEP_GOING:-}"
 
 # ARGS
 COMMIT_MSG_FILE=""
@@ -64,8 +70,14 @@ COMMIT_MSG_FILE=""
 # Print arguments to stderr and die
 # $*: Error text to be printed
 die() {
-	printf "%s" "$*" >&2
+	printf "[DIE] ${0##*[/\\]}: %s\n" "$*" >&2
 	exit 1
+}
+
+# Print arguments to stderr
+# $*: Warning text to be printed
+warn() {
+	printf "[WARN] ${0##*[/\\]}: %s\n" "$*" >&2
 }
 
 # Print script help
@@ -76,7 +88,7 @@ print_help() {
 
 # Parse arguments and fills global variables (OPTS and ARGS) out of them
 parse_args() {
-	while getopts "hc:m:M:1d:f" OPTKEY; do
+	while getopts "hc:m:M:1d:fk" OPTKEY; do
 		case "${OPTKEY}" in
 		h)
 			print_help
@@ -103,6 +115,9 @@ parse_args() {
 		f)
 			FAIL_IF_NO_IDS="1"
 			;;
+		k)
+			KEEP_GOING="1"
+			;;
 		*)
 			die "Unexpected argument, see -h"
 			;;
@@ -118,11 +133,19 @@ parse_args() {
 		die "Missing commit-msg-file argument"
 	elif [[ $# -gt 1 ]]; then
 		die "Too many commit-msg-file arguments, only one supported"
-	elif ! [[ -r $1 ]]; then
-		die "commit-msg-file argument is not a readable file"
 	fi
 
 	COMMIT_MSG_FILE="${1}"
+
+	if [[ ! -f ${COMMIT_MSG_FILE} ]] && [[ -n ${KEEP_GOING} ]]; then
+		warn "Missing required '${COMMIT_MSG_FILE}' commit-msg-file argument"
+		warn "Creating '${COMMIT_MSG_FILE}' empty file as a workaround"
+		touch "${COMMIT_MSG_FILE}"
+	fi
+
+	if [[ ! -w $1 ]]; then
+		die "commit-msg-file argument ($1) is not a writable file"
+	fi
 }
 
 # Parse current git branch name and print its numbers, space-separated.
