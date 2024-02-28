@@ -10,7 +10,7 @@
 - id: set-readonly
   name: set read-only files
   description: change attributes of given files to set them read-only
-  entry: hooks/set_readonly
+  entry: hooks/set_readonly.sh
   language: script
   always_run: true
   pass_filenames: false
@@ -24,7 +24,7 @@
 - id: msg-add-redmine-refs
   name: add Redmine refs to commit message
   description: peek redmine ids from branch name and appends refs to them
-  entry: hooks/msg_add_redmine_refs
+  entry: hooks/msg_add_redmine_refs.sh
   language: script
   stages: [prepare-commit-msg]
   args: ['-1', -d, '', -k]
