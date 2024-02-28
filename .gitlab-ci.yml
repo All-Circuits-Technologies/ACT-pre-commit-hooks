@@ -12,4 +12,4 @@ stages:
   - deploy
 
 include:
- - local: '/gitlab-ci/**.gitlab-ci.yml'
+ - local: 'gitlab-ci/**.gitlab-ci.yml'
