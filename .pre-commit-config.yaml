@@ -96,7 +96,7 @@ repos:
       exclude: '^tools/.*'
 
 - repo: .
-  rev: 6eca303
+  rev: 5342b6f
   hooks:
   - id: set-readonly                                # custom
     # Example of use, there is no such files controlled in current repository
