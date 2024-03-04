@@ -1,0 +1,32 @@
+# SPDX-FileCopyrightText: 2024 Anthony Loiseau <anthony.loiseau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+# See https://EditorConfig.org
+
+# Do not walk parent folders
+root = true
+
+[*]
+charset = utf-8
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[.editorconfig]
+end_of_line = lf
+
+[*.sh]
+indent_style = space
+indent_size = 4
+end_of_line = lf
+# shfmt custom:
+keep_padding = true
+switch_case_indent = true
+
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+[Makefile]
+indent_style = tab
+tab_width = 8

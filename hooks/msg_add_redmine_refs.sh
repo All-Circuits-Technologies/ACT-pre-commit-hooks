@@ -70,129 +70,129 @@ COMMIT_MSG_FILE=""
 # Print arguments to stderr and die
 # $*: Error text to be printed
 die() {
-	printf "[DIE] ${0##*[/\\]}: %s\n" "$*" >&2
-	exit 1
+    printf "[DIE] ${0##*[/\\]}: %s\n" "$*" >&2
+    exit 1
 }
 
 # Print arguments to stderr
 # $*: Warning text to be printed
 warn() {
-	printf "[WARN] ${0##*[/\\]}: %s\n" "$*" >&2
+    printf "[WARN] ${0##*[/\\]}: %s\n" "$*" >&2
 }
 
 # Print script help
 # $1: optional verbosity (minimal leading hashes count), defaults to 2
 print_help() {
-	grep "^##\( \|\$\)" "$0" | sed 's/^#* \?//' | sed "s,\$0,$0,"
+    grep "^##\( \|\$\)" "$0" | sed 's/^#* \?//' | sed "s,\$0,$0,"
 }
 
 # Parse arguments and fills global variables (OPTS and ARGS) out of them
 parse_args() {
-	while getopts "hc:m:M:1d:fk" OPTKEY; do
-		case "${OPTKEY}" in
-		h)
-			print_help
-			exit 0
-			;;
-		c)
-			#[[ "${OPTARG}" ~= "[0-9]+" ]] || die "Invalid -c value"
-			MAX_ID_COUNT="${OPTARG}"
-			;;
-		m)
-			#[[ "${OPTARG}" ~= "[0-9]+" ]] || die "Invalid -m value"
-			MIN_ID_LENGTH="${OPTARG}"
-			;;
-		M)
-			#[[ "${OPTARG}" ~= "[0-9]+" ]] || die "Invalid -M value"
-			MAX_ID_LENGTH="${OPTARG}"
-			;;
-		1)
-			ONE_LINER="1"
-			;;
-		d)
-			DEFAULT_REF_VALUE="${OPTARG}"
-			;;
-		f)
-			FAIL_IF_NO_IDS="1"
-			;;
-		k)
-			KEEP_GOING="1"
-			;;
-		*)
-			die "Unexpected argument, see -h"
-			;;
-		esac
-	done
+    while getopts "hc:m:M:1d:fk" OPTKEY; do
+        case "${OPTKEY}" in
+            h)
+                print_help
+                exit 0
+                ;;
+            c)
+                #[[ "${OPTARG}" ~= "[0-9]+" ]] || die "Invalid -c value"
+                MAX_ID_COUNT="${OPTARG}"
+                ;;
+            m)
+                #[[ "${OPTARG}" ~= "[0-9]+" ]] || die "Invalid -m value"
+                MIN_ID_LENGTH="${OPTARG}"
+                ;;
+            M)
+                #[[ "${OPTARG}" ~= "[0-9]+" ]] || die "Invalid -M value"
+                MAX_ID_LENGTH="${OPTARG}"
+                ;;
+            1)
+                ONE_LINER="1"
+                ;;
+            d)
+                DEFAULT_REF_VALUE="${OPTARG}"
+                ;;
+            f)
+                FAIL_IF_NO_IDS="1"
+                ;;
+            k)
+                KEEP_GOING="1"
+                ;;
+            *)
+                die "Unexpected argument, see -h"
+                ;;
+        esac
+    done
 
-	if [[ ${MIN_ID_LENGTH} -gt ${MAX_ID_LENGTH} ]]; then
-		die "Min ID length requirement must be equal or greater than max length"
-	fi
+    if [[ ${MIN_ID_LENGTH} -gt ${MAX_ID_LENGTH} ]]; then
+        die "Min ID length requirement must be equal or greater than max length"
+    fi
 
-	shift $((OPTIND - 1))
-	if [[ $# -eq 0 ]]; then
-		die "Missing commit-msg-file argument"
-	elif [[ $# -gt 1 ]]; then
-		die "Too many commit-msg-file arguments, only one supported"
-	fi
+    shift $((OPTIND - 1))
+    if [[ $# -eq 0 ]]; then
+        die "Missing commit-msg-file argument"
+    elif [[ $# -gt 1 ]]; then
+        die "Too many commit-msg-file arguments, only one supported"
+    fi
 
-	COMMIT_MSG_FILE="${1}"
+    COMMIT_MSG_FILE="${1}"
 
-	if [[ ! -f ${COMMIT_MSG_FILE} ]] && [[ -n ${KEEP_GOING} ]]; then
-		warn "Missing required '${COMMIT_MSG_FILE}' commit-msg-file argument"
-		warn "Creating '${COMMIT_MSG_FILE}' empty file as a workaround"
-		touch "${COMMIT_MSG_FILE}"
-	fi
+    if [[ ! -f ${COMMIT_MSG_FILE} ]] && [[ -n ${KEEP_GOING} ]]; then
+        warn "Missing required '${COMMIT_MSG_FILE}' commit-msg-file argument"
+        warn "Creating '${COMMIT_MSG_FILE}' empty file as a workaround"
+        touch "${COMMIT_MSG_FILE}"
+    fi
 
-	if [[ ! -w $1 ]]; then
-		die "commit-msg-file argument ($1) is not a writable file"
-	fi
+    if [[ ! -w $1 ]]; then
+        die "commit-msg-file argument ($1) is not a writable file"
+    fi
 }
 
 # Parse current git branch name and print its numbers, space-separated.
 peek_redmine_ids() {
-	git symbolic-ref --short HEAD |
-		(grep -wo "[0-9]\{${MIN_ID_LENGTH},${MAX_ID_LENGTH}\}" || true) |
-		head -n "${MAX_ID_COUNT}" |
-		tr '\n' ' ' |
-		sed 's/ $//'
+    git symbolic-ref --short HEAD |
+        (grep -wo "[0-9]\{${MIN_ID_LENGTH},${MAX_ID_LENGTH}\}" || true) |
+        head -n "${MAX_ID_COUNT}" |
+        tr '\n' ' ' |
+        sed 's/ $//'
 }
 
 main() {
-	parse_args "$@"
+    parse_args "$@"
 
-	local ids
-	ids="$(peek_redmine_ids)"
+    local ids
+    ids="$(peek_redmine_ids)"
 
-	# Special no IDs found cases
-	if [[ -z ${ids} ]] && [[ -n ${FAIL_IF_NO_IDS} ]]; then
-		die "No IDs found in current branch name"
-	fi
+    # Special no IDs found cases
+    if [[ -z ${ids} ]] && [[ -n ${FAIL_IF_NO_IDS} ]]; then
+        die "No IDs found in current branch name"
+    fi
 
-	if [[ -z ${ids} ]] && [[ -z ${DEFAULT_REF_VALUE} ]]; then
-		# No fallback trailer values, nothing to do, success
-		exit 0
-	fi
+    if [[ -z ${ids} ]] && [[ -z ${DEFAULT_REF_VALUE} ]]; then
+        # No fallback trailer values, nothing to do, success
+        exit 0
+    fi
 
-	# Compute wanted redmine ref trailer value(s)
-	REF_VALUES=()
-	if [[ -z ${ids} ]]; then
-		REF_VALUES+=("${DEFAULT_REF_VALUE}")
-	elif [[ -n ${ONE_LINER} ]]; then
-		REF_VALUES+=("#${ids// /, #}")
-	else
-		for id in ${ids}; do
-			REF_VALUES+=("#${id}")
-		done
-	fi
+    # Compute wanted redmine ref trailer value(s)
+    REF_VALUES=()
+    if [[ -z ${ids} ]]; then
+        REF_VALUES+=("${DEFAULT_REF_VALUE}")
+    elif [[ -n ${ONE_LINER} ]]; then
+        REF_VALUES+=("#${ids// /, #}")
+    else
+        for id in ${ids}; do
+            REF_VALUES+=("#${id}")
+        done
+    fi
 
-	# Add trailers to commit-msg-file
-	for REF_VALUE in "${REF_VALUES[@]}"; do
-		git interpret-trailers \
-			--in-place \
-			--trailer "${REDMINE_TRAILER_KEY}: ${REF_VALUE}" \
-			--if-exists addIfDifferent \
-			"${COMMIT_MSG_FILE}"
-	done
+    # Add trailers to commit-msg-file
+    for REF_VALUE in "${REF_VALUES[@]}"; do
+        git interpret-trailers \
+            --in-place \
+            --trailer "${REDMINE_TRAILER_KEY}: ${REF_VALUE}" \
+            --if-exists addIfDifferent \
+            "${COMMIT_MSG_FILE}"
+    done
 }
 
 main "$@"

@@ -22,20 +22,20 @@ set -u
 set -o pipefail
 
 if [[ $# -eq "0" ]]; then
-	echo "${0##*[/\\]}: Required argument missing" >&2
-	echo "At least one git ls-files pattern expected, see -h" >&2
-	echo "Hint: you may have forgotten to override pre-commit args array" >&2
-	exit 1
+    echo "${0##*[/\\]}: Required argument missing" >&2
+    echo "At least one git ls-files pattern expected, see -h" >&2
+    echo "Hint: you may have forgotten to override pre-commit args array" >&2
+    exit 1
 elif [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
-	grep '^##' "$0" | sed 's/^## \?//' | sed "s,\$0,$0,"
-	exit 0
+    grep '^##' "$0" | sed 's/^## \?//' | sed "s,\$0,$0,"
+    exit 0
 fi
 
 set -f
 IFS=$'\r\n'
 
 for file_pattern in "$@"; do
-	for file in $(git ls-files ":/${file_pattern}"); do
-		chmod --changes --preserve-root a-w -- "${file}"
-	done
+    for file in $(git ls-files ":/${file_pattern}"); do
+        chmod --changes --preserve-root a-w -- "${file}"
+    done
 done
