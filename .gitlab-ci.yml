@@ -1,0 +1,15 @@
+# SPDX-FileCopyrightText: 2023 Anthony Loiseau <anthony.loiseau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+# Extend gitlab default stages list to prepend a "lint" stage
+# so linters can quickly halt pipelines and avoid useless and
+# maybe resources-hungry build, test, deploy stages.
+stages:
+  - lint
+  - build
+  - test
+  - deploy
+
+include:
+ - local: 'gitlab-ci/**.gitlab-ci.yml'

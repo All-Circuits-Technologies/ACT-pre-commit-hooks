@@ -1,0 +1,105 @@
+# SPDX-FileCopyrightText: 2024 Anthony Loiseau <anthony.loiseau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+# Think about bumping revs from times to times: pre-commit autoupdate
+
+# We have ACT custom hooks targeting prepare-commit-msg and commit-msg stages.
+# By default, "pre-commit install" installs itself over git pre-commit hook only
+# without scanning enabled hooks and their targeted stages.
+# This configuration tells "pre-commit install" to also install itself over
+# commit-msg related git hooks by default, making it easier to enable all our
+# hooks.
+#
+# Note: many (almost all) third-party hooks do not define explicitly stages
+# they should run on. Those are executed in all installed hooks, meaning most
+# hooks bellow are executed three times per commit instead of one time.
+# A smart action would be to contribute to those repos, adding missing stages
+# configuration to optimize this. A quicker action is to override default_stages
+# with a saner value for our use case.
+#
+# WARNING: "git gui" tool do play with prepare-commit-msg hook, automatically
+# calling it to pre-fill its commit message box. It does this without creating
+# an empty commit message first, triggering crashes in various pre-commit hooks
+# like mixed-line-ending, failing at missing ".git/PREPARE_COMMIT_MSG" argument
+# file. This is currently workarounded by:
+# - overriding default_stages
+# - adding an option to our prepare-commit hooks for them to accept missing file
+#
+# We may want to contribute to "git gui" to fix missing empty commit message
+# creation since it does not comply with git specifications stating that
+# "prepare-commit-msg hook is run before the commit message editor is fired up
+# but after the default message is created". FOSS ticket created #17608.
+#
+# Note that "git gui" prepare-commit-msg automatic hook execution is also a
+# issue when .pre-commit-config.yml is being worked on, since pre-commit
+# internal hook themselves complains and return a non-zero value.
+default_install_hook_types: [pre-commit, prepare-commit-msg, commit-msg]
+
+# Hooks which do not explicitly define stages are asked to trigger on
+# pre-commit only, and clearly not on prepare-commit-msg or commit-msg.
+# This appears a fancy workaround for issues described above.
+default_stages: [pre-commit]
+
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.5.0
+  hooks:
+  - id: check-added-large-files                     # all
+  - id: check-case-conflict                         # all
+  - id: check-merge-conflict                        # text
+  - id: check-vcs-permalinks                        # text
+  - id: detect-private-key                          # text
+  - id: end-of-file-fixer                           # text
+  - id: fix-byte-order-marker                       # text
+  - id: mixed-line-ending                           # text
+  - id: trailing-whitespace                         # text
+  - id: check-executables-have-shebangs             # shell
+  - id: check-shebang-scripts-are-executable        # shell
+  - id: check-yaml                                  # yaml
+    args: [--allow-multiple-documents]
+  # - id: check-ast                                   # python
+  # - id: check-docstring-first                       # python
+  # - id: check-json                                  # json
+  # - id: check-toml                                  # toml
+  # - id: check-xml                                   # xml
+
+- repo: https://github.com/pre-commit/pre-commit
+  rev: v3.6.2
+  hooks:
+  - id: validate_manifest                           # .pre-commit-hooks.yaml
+
+- repo: https://github.com/fsfe/reuse-tool.git
+  rev: v3.0.1
+  hooks:
+  - id: reuse                                       # all
+
+- repo: https://github.com/igorshubovych/markdownlint-cli
+  rev: v0.39.0
+  hooks:
+  - id: markdownlint-fix                            # markdown
+
+- repo: https://github.com/shellcheck-py/shellcheck-py
+  rev: v0.9.0.6
+  hooks:
+  - id: shellcheck                                  # shell
+
+- repo: https://github.com/scop/pre-commit-shfmt
+  rev: v3.8.0-1
+  hooks:
+    - id: shfmt                                     # shell
+      # Tools scripts are not compatible with shfmt and are not designed within
+      # this repo (copied from skels). Therefore we don't want this repo to
+      # enforce a style on them.
+      exclude: '^tools/.*'
+
+- repo: .
+  rev: 5342b6f
+  hooks:
+  - id: set-readonly                                # custom
+    # Example of use, there is no such files controlled in current repository
+    args: ['*.sqlite']
+  - id: msg-add-redmine-refs                        # n/a
+  - id: msg-remove-empty-trailers                   # n/a
